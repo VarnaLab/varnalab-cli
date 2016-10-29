@@ -1,0 +1,35 @@
+{
+  "name": "@varnalab/cli",
+  "version": "1.0.0",
+  "description": "VarnaLab CLI Tool",
+  "keywords": [],
+  "license": "MIT",
+  "homepage": "https://github.com/VarnaLab/varnalab-cli",
+  "author": "Simeon Velichkov <simeonvelichkov@gmail.com> (http://simov.github.io)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/VarnaLab/varnalab-cli.git"
+  },
+  "dependencies": {
+    "async": "^0.9.2",
+    "cli-table": "^0.3.1",
+    "mikronode": "https://github.com/Trakkasure/mikronode.git#v1.0.3",
+    "minimist": "^1.2.0"
+  },
+  "devDependencies": {},
+  "bin": {
+    "varnalab": "./bin/varnalab.js",
+    "varnalab-whois": "./bin/whois.js"
+  },
+  "main": "",
+  "files": [
+    "bin/",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
+  "scripts": {},
+  "engines": {
+    "node": ">=4.0.0"
+  }
+}
