@@ -24,6 +24,7 @@
   "main": "",
   "files": [
     "bin/",
+    "lib/",
     "LICENSE",
     "README.md",
     "package.json"
