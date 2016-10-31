@@ -4,25 +4,21 @@ const env = process.env.NODE_ENV || 'development'
 
 var argv = require('minimist')(process.argv.slice(2))
 
-var render = ((Table) => ((rows) => {
-  var table = new Table({style: {head: ['green']}})
-  rows.forEach((row) => table.push(row))
-  return table.toString()
-}))(require('cli-table'))
+var render = require('../lib/render')
 
 if (argv.help) {
-  console.log(render([
+  console.log(render(['Flag', 'Description'], [
     {'--help': 'Help message about `varnalab-whois`'},
     {'--config [file]': 'Specify config file - Required'},
-    {'--json': 'JSON output'},
-    {'--slack': 'Slack attachment output'},
+    {'--output [json|output|clean]': 'JSON / Slack attachment output / ' +
+      'Clean output without UTF8 tables'},
     {'--timeout 5000': 'Timeout in milliseconds - defaults to 5000'}
   ]))
   process.exit()
 }
 
 if (!argv.config) {
-  console.log('Specify --config [file]')
+  console.log(render(['Error'], [['Specify --config [file]']]))
   process.exit()
 }
 
@@ -81,14 +77,18 @@ function print (err, result) {
       }))
   }
 
-  if (argv.json) {
+  if (argv.output === 'json') {
     console.log(JSON.stringify({timestamp, error, active}))
   }
-  else if (argv.slack) {
+  else if (argv.output === 'slack') {
     console.log(JSON.stringify({timestamp, error: 'Not implemented!'}))
   }
   else {
-    console.log(render(error ? [{timestamp}, {error}] : [{timestamp}, {active}]))
+    console.log(error
+      ? render(['Error'], [[error]])
+      : render(['mac', 'ip', 'host'],
+          active.map((lease) => ([lease.mac, lease.ip, lease.host])))
+    )
   }
 }
 

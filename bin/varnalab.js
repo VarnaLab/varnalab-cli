@@ -4,11 +4,7 @@ const env = process.env.NODE_ENV || 'development'
 
 var argv = require('minimist')(process.argv.slice(2))
 
-var render = ((Table) => ((rows) => {
-  var table = new Table({style: {head: ['green']}})
-  rows.forEach((row) => table.push(row))
-  return table.toString()
-}))(require('cli-table'))
+var render = require('../lib/render')
 
 var fs = require('fs')
 var path = require('path')
@@ -18,16 +14,15 @@ var commands = fs.readdirSync(path.resolve(__dirname))
 commands.splice(commands.indexOf('varnalab'), 1)
 
 if (!argv._.length && argv.help) {
-  console.log(render([
+  console.log(render(['Flag', 'Description'], [
     {'--help': 'Help message about `varnalab`'},
-    {'[command] [arguments]': 'Execute command with arguments'},
-    {'Available commands': commands.join(', ')}
+    {'[command] [arguments]': 'Execute command with arguments - ' + commands.join(', ')}
   ]))
   process.exit()
 }
 
 if (!argv._.length) {
-  console.log('Specify [command] [arguments] to execute')
+  console.log(render(['Error'], [['Specify [command] [arguments] to execute']]))
   process.exit()
 }
 
@@ -35,7 +30,7 @@ var command = argv._[0]
 
 var match = commands.filter((cmd) => (cmd === command))
 if (!match.length) {
-  console.log(render([{'Available commands are: ': commands.join(', ')}]))
+  console.log(render(['Available Commands'], [[commands.join(', ')]]))
   process.exit()
 }
 
