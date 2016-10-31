@@ -1,6 +1,8 @@
 
 # @varnalab/cli
 
+[![npm-version]][npm]
+
 Install:
 
 ```bash
@@ -60,7 +62,11 @@ varnalab-whois --config [file]
 Crontab configuration:
 
 ```bash
-*/10 * * * * NODE_ENV=production varnalab-whois --config [file] --slack > /nginx/serve/location/varnalab-whois.json
+*/10 * * * * NODE_ENV=production varnalab-whois --config [file] --output slack > /nginx/serve/location/varnalab-whois.json
 ```
 
 ---
+
+
+  [npm-version]: http://img.shields.io/npm/v/@varnalab/cli.svg?style=flat-square (NPM Package Version)
+  [npm]: https://www.npmjs.com/package/@varnalab/cli
