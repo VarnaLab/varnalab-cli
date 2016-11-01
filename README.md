@@ -29,6 +29,19 @@ varnalab [command] --help
 
 ---
 
+# ~/.varnalab-cli
+
+Format:
+
+```js
+{
+  "output": "clean",
+  "timeout": 1000
+}
+```
+
+---
+
 # varnalab-whois
 
 Help:
