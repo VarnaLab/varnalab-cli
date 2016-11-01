@@ -25,6 +25,7 @@ var connection = MikroNode.getConnection(
 var async = require('async')
 
 
+var chan
 var router = {
   ondata: (done) => (router.done = done)
 }
