@@ -1,12 +1,9 @@
 #!/usr/bin/env node
 
-const env = process.env.NODE_ENV || 'development'
+var args = require('../lib/config')()
+var render = require('../lib/render')(args)
 
-var argv = require('minimist')(process.argv.slice(2))
-
-var render = require('../lib/render')
-
-if (argv.help) {
+if (args.help) {
   console.log(render(['Flag', 'Description'], [
     {'--help': 'Help message about `varnalab-whois`'},
     {'--config [file]': 'Specify config file - Required'},
@@ -17,16 +14,14 @@ if (argv.help) {
   process.exit()
 }
 
-if (!argv.config) {
-  console.log(render(['Error'], [['Specify --config [file]']]))
+if (!args.config) {
+  console.error('Error: Specify --config [file]')
   process.exit()
 }
 
-var path = require('path')
-var config = require(path.resolve(process.cwd(), argv.config))[env]
-
 var MikroNode = require('mikronode')
-var connection = MikroNode.getConnection(config.host, config.user, config.pass)
+var connection = MikroNode.getConnection(
+  args.config.host, args.config.user, args.config.pass)
 var async = require('async')
 
 
@@ -77,22 +72,22 @@ function print (err, result) {
       }))
   }
 
-  if (argv.output === 'json') {
+  if (args.output === 'json') {
     console.log(JSON.stringify({timestamp, error, active}))
   }
-  else if (argv.output === 'slack') {
+  else if (args.output === 'slack') {
     console.log(JSON.stringify({timestamp, error: 'Not implemented!'}))
   }
   else {
-    console.log(error
-      ? render(['Error'], [[error]])
-      : render(['mac', 'ip', 'host'],
-          active.map((lease) => ([lease.mac, lease.ip, lease.host])))
-    )
+    error
+      ? console.error('Error:', error)
+      : console.log(render(['mac', 'ip', 'host'],
+          active.map((lease) => ([lease.mac, lease.ip, lease.host]))
+        ))
   }
 }
 
 var timeout = setTimeout(() => {
   print(new Error('Timeout!'))
   process.exit()
-}, argv.timeout || 5000)
+}, args.timeout || 5000)

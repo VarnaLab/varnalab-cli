@@ -13,10 +13,14 @@
   "dependencies": {
     "async": "^0.9.2",
     "cli-table": "^0.3.1",
-    "mikronode": "https://github.com/Trakkasure/mikronode.git#v1.0.3",
+    "extend": "^3.0.0",
+    "mikronode": "https://github.com/VarnaLab/mikronode.git#v1.0.3",
     "minimist": "^1.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "istanbul": "^0.4.5",
+    "mocha": "^3.1.2"
+  },
   "bin": {
     "varnalab": "./bin/varnalab.js",
     "varnalab-whois": "./bin/whois.js"
@@ -29,7 +33,12 @@
     "README.md",
     "package.json"
   ],
-  "scripts": {},
+  "scripts": {
+    "test": "npm run lint && npm run test-ci",
+    "test-ci": "mocha test/",
+    "test-cov": "npm run test-ci && istanbul report",
+    "lint": "eslint **/*.js && echo Lint Passed"
+  },
   "engines": {
     "node": ">=4.0.0"
   }

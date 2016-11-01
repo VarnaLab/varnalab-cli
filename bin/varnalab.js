@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 
-const env = process.env.NODE_ENV || 'development'
-
-var argv = require('minimist')(process.argv.slice(2))
-
-var render = require('../lib/render')
+var args = require('../lib/config')()
+var render = require('../lib/render')(args)
 
 var fs = require('fs')
 var path = require('path')
@@ -13,24 +10,25 @@ var commands = fs.readdirSync(path.resolve(__dirname))
   .map((cmd) => cmd.replace('.js', ''))
 commands.splice(commands.indexOf('varnalab'), 1)
 
-if (!argv._.length && argv.help) {
+if (!args._.length && args.help) {
   console.log(render(['Flag', 'Description'], [
     {'--help': 'Help message about `varnalab`'},
-    {'[command] [arguments]': 'Execute command with arguments - ' + commands.join(', ')}
+    {'[command] [arguments]': 'Execute command with arguments - ' +
+      commands.join(', ')}
   ]))
   process.exit()
 }
 
-if (!argv._.length) {
-  console.log(render(['Error'], [['Specify [command] [arguments] to execute']]))
+if (!args._.length) {
+  console.error('Error: Specify [command] [arguments] to execute')
   process.exit()
 }
 
-var command = argv._[0]
+var command = args._[0]
 
 var match = commands.filter((cmd) => (cmd === command))
 if (!match.length) {
-  console.log(render(['Available Commands'], [[commands.join(', ')]]))
+  console.error('Error: Available commands are:', commands.join(', '))
   process.exit()
 }
 
