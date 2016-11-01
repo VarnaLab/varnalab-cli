@@ -8,7 +8,7 @@ var cp = require('child_process')
 var fpath = path.resolve(os.homedir(), '.varnalab-cli')
 
 var spawn = ((index) => (args, env) => {
-  var fpath = path.resolve(__dirname, '../utils/render.js')
+  var fpath = path.resolve(__dirname, '../spawn.js')
   var dpath = path.resolve(__dirname, '../../coverage/render' + index++)
   return cp.spawn('istanbul', ['cover', '--dir', dpath, fpath]
     .concat(args ? ['--'].concat(args) : []),
@@ -19,6 +19,12 @@ var spawn = ((index) => (args, env) => {
 
 describe('render', () => {
   var render
+
+  before(() => {
+    fs.writeFileSync(path.resolve(__dirname, '../spawn.js'),
+      'console.log(JSON.stringify(require(\'../lib/render\')({})))'
+    )
+  })
 
   describe('coverage', () => {
     before(() => {
@@ -33,5 +39,9 @@ describe('render', () => {
       render.kill()
       done()
     }, 100))
+  })
+
+  after(() => {
+    fs.unlinkSync(path.resolve(__dirname, '../spawn.js'))
   })
 })
