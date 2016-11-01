@@ -1,7 +1,7 @@
 
 # @varnalab/cli
 
-[![npm-version]][npm]
+[![npm-version]][npm] [![travis-ci]][travis] [![coveralls-status]][coveralls]
 
 Install:
 
@@ -69,4 +69,9 @@ Crontab configuration:
 
 
   [npm-version]: http://img.shields.io/npm/v/@varnalab/cli.svg?style=flat-square (NPM Package Version)
+  [travis-ci]: https://img.shields.io/travis/VarnaLab/varnalab-cli/master.svg?style=flat-square (Build Status - Travis CI)
+  [coveralls-status]: https://img.shields.io/coveralls/VarnaLab/varnalab-cli.svg?style=flat-square (Test Coverage - Coveralls)
+
   [npm]: https://www.npmjs.com/package/@varnalab/cli
+  [travis]: https://travis-ci.org/VarnaLab/varnalab-cli
+  [coveralls]: https://coveralls.io/github/VarnaLab/varnalab-cli
