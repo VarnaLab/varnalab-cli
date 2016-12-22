@@ -1,33 +1,38 @@
 #!/usr/bin/env node
 
-if (module.parent) {
+if (!module.parent) {
+  var args = require('../lib/config')()
+  var render = require('../lib/render')(args)
+
+  if (args.help) {
+    console.log(render(['Flag', 'Description'], [
+      {'--help': 'Help message about `varnalab-whois`'},
+      {'--config [file]': 'Specify config file - Required'},
+      {'--output [json|slack|clean]': 'JSON / Slack attachment output / ' +
+        'Clean output without UTF8 tables'},
+      {'--timeout 5000': 'Timeout in milliseconds - defaults to 5000'}
+    ]))
+    process.exit()
+  }
+
+  if (!args.config) {
+    console.error('Error: Specify --config [file]')
+    process.exit()
+  }
+
+  var async = require('async')
+  var MikroNode = require('mikronode')
+
+  execute()
+
+  var timeout = setTimeout(() => {
+    print(new Error('Timeout!'))
+    process.exit()
+  }, args.timeout || 5000)
+}
+else {
   module.exports = {execute, print}
-  return
 }
-
-var args = require('../lib/config')()
-var render = require('../lib/render')(args)
-
-if (args.help) {
-  console.log(render(['Flag', 'Description'], [
-    {'--help': 'Help message about `varnalab-whois`'},
-    {'--config [file]': 'Specify config file - Required'},
-    {'--output [json|slack|clean]': 'JSON / Slack attachment output / ' +
-      'Clean output without UTF8 tables'},
-    {'--timeout 5000': 'Timeout in milliseconds - defaults to 5000'}
-  ]))
-  process.exit()
-}
-
-if (!args.config) {
-  console.error('Error: Specify --config [file]')
-  process.exit()
-}
-
-var async = require('async')
-var MikroNode = require('mikronode')
-
-execute()
 
 function execute () {
   var connection = MikroNode.getConnection(
@@ -106,8 +111,3 @@ function print (err, result, output, render) {
           active.map((lease) => ([lease.mac, lease.ip, lease.host])))
   }
 }
-
-var timeout = setTimeout(() => {
-  print(new Error('Timeout!'))
-  process.exit()
-}, args.timeout || 5000)
