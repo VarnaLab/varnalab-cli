@@ -1,0 +1,40 @@
+{
+  "timestamp": 1482396988,
+  "active": [
+    {
+      "mac": "10:AA:7D:BB:53:50",
+      "ip": "192.168.108.34",
+      "host": "outbounder-ThinkPad-W541"
+    },
+    {
+      "mac": "AA:E6:DD:90:A2:AF",
+      "ip": "192.168.108.71",
+      "host": "rio-pc"
+    },
+    {
+      "mac": "F4:6D:DD:63:B6:2E",
+      "ip": "192.168.108.61",
+      "host": "rio-pc"
+    },
+    {
+      "mac": "AA:E6:DD:90:A2:AF",
+      "ip": "192.168.98.202",
+      "host": "rio-pc"
+    },
+    {
+      "mac": "E0:BB:E6:AA:DF:76",
+      "ip": "192.168.108.161",
+      "host": "freeloop-PC"
+    },
+    {
+      "mac": "54:CC:A8:EE:13:E9",
+      "ip": "192.168.98.171",
+      "host": "freeloosiPhone5"
+    },
+    {
+      "mac": "BB:59:F9:CC:19:34",
+      "ip": "192.168.98.42",
+      "host": "dirchev-ThinkPad-T520"
+    }
+  ]
+}

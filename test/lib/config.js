@@ -63,7 +63,7 @@ describe('config', () => {
   describe('mikrotik - JSON error', () => {
     it('JSON parse error', () => {
       t.throws(() => config({
-        config: path.resolve(__dirname, '../fixtures/mikrotik-error.json')}),
+        config: path.resolve(__dirname, '../fixtures/config/mikrotik-error.json')}),
         /Error: .* Unexpected token :/)
     })
   })
@@ -71,7 +71,7 @@ describe('config', () => {
   describe('mikrotik - environment error', () => {
     it('non existing environment', () => {
       t.throws(() => config({
-        config: path.resolve(__dirname, '../fixtures/mikrotik.json')}),
+        config: path.resolve(__dirname, '../fixtures/config/mikrotik.json')}),
         /Error: Non existing environment in config file/)
     })
   })
@@ -79,7 +79,7 @@ describe('config', () => {
   describe('mikrotik - success', () => {
     it('load config', () => {
       t.deepEqual(config({
-        config: path.resolve(__dirname, '../fixtures/mikrotik.json'),
+        config: path.resolve(__dirname, '../fixtures/config/mikrotik.json'),
         env: 'staging'
       }), {
         config: {host: 's1', user: 's2', pass: 's3', port: 2},
@@ -108,7 +108,7 @@ describe('config', () => {
 
     it('non existing environment', () => {
       t.deepEqual(config({
-        config: path.resolve(__dirname, '../fixtures/mikrotik.json'),
+        config: path.resolve(__dirname, '../fixtures/config/mikrotik.json'),
         env: 'staging'
       }), {
         config: {host: 's1', user: 's2', pass: 's3', port: 2},
