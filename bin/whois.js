@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+if (module.parent) {
+  module.exports = {execute, print}
+  return
+}
+
 var args = require('../lib/config')()
 var render = require('../lib/render')(args)
 
@@ -22,7 +27,9 @@ if (!args.config) {
 var async = require('async')
 var MikroNode = require('mikronode')
 
-exports.start = () => {
+execute()
+
+function execute () {
   var connection = MikroNode.getConnection(
     args.config.host, args.config.user, args.config.pass)
 
@@ -51,13 +58,13 @@ exports.start = () => {
     }
   }, (err, result) => {
     clearTimeout(timeout)
-    var output = exports.print(err, result)
+    var output = print(err, result, args.output, render)
     console[output instanceof Error ? 'error' : 'log'](output)
     process.exit()
   })
 }
 
-exports.print = (err, result) => {
+function print (err, result, output, render) {
   var timestamp = Math.floor(Date.now() / 1000)
   var error, active
 
@@ -76,10 +83,10 @@ exports.print = (err, result) => {
       }))
   }
 
-  if (args.output === 'json') {
+  if (output === 'json') {
     return JSON.stringify({timestamp, error, active})
   }
-  else if (args.output === 'slack') {
+  else if (output === 'slack') {
     return JSON.stringify({
       attachments: [{
         fallback: 'Whois in VarnaLab',
@@ -98,10 +105,6 @@ exports.print = (err, result) => {
       : render(['mac', 'ip', 'host'],
           active.map((lease) => ([lease.mac, lease.ip, lease.host])))
   }
-}
-
-if (!module.parent) {
-  exports.start()
 }
 
 var timeout = setTimeout(() => {

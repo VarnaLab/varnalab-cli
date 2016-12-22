@@ -2,46 +2,35 @@
 var t = require('assert')
 var fs = require('fs')
 var path = require('path')
-var os = require('os')
-var cp = require('child_process')
-
-var fpath = path.resolve(os.homedir(), '.varnalab-cli')
-
-var spawn = ((index) => (args, env) => {
-  var fpath = path.resolve(__dirname, '../spawn.js')
-  var dpath = path.resolve(__dirname, '../../coverage/whois' + index++)
-  return cp.spawn('istanbul', ['cover', '--dir', dpath, fpath]
-    .concat(args ? ['--'].concat(args) : []),
-    {env: process.env}
-  )
-})(0)
+var whois = require('../../bin/whois')
+var render = require('../../lib/render')
+var fixtures = {
+  mikrotik: require('../fixtures/whois/mikrotik'),
+  json: require('../fixtures/whois/json'),
+  slack: require('../fixtures/whois/slack'),
+  clean: fs.readFileSync(
+    path.resolve(__dirname, '../fixtures/whois/clean'), 'utf8')
+}
 
 
-describe('whois', () => {
-  var whois
-
-  before(() => {
-    fs.writeFileSync(path.resolve(__dirname, '../spawn.js'),
-      'console.log(JSON.stringify(require(\'../bin/whois\')))'
-    )
-  })
-
-  describe('coverage', () => {
-    before(() => {
-      whois = spawn()
+describe('varnalab', () => {
+  describe('print', () => {
+    it('json', () => {
+      t.deepEqual(
+        JSON.parse(whois.print(null, fixtures.mikrotik, 'json')).active,
+        fixtures.json.active
+      )
     })
-
-    it('dummy', (done) => {
-      whois.stdout.once('data', () => done())
+    it('slack', () => {
+      var output = JSON.parse(whois.print(null, fixtures.mikrotik, 'slack'))
+      delete output.attachments[0].ts
+      delete fixtures.slack.attachments[0].ts
+      t.deepEqual(output, fixtures.slack)
     })
-
-    after((done) => setTimeout(() => {
-      whois.kill()
-      done()
-    }, 100))
-  })
-
-  after(() => {
-    fs.unlinkSync(path.resolve(__dirname, '../spawn.js'))
+    it('clean', () => {
+      var output = whois.print(null, fixtures.mikrotik, 'clean',
+        render({output: 'clean'}))
+      t.equal(output, fixtures.clean)
+    })
   })
 })
