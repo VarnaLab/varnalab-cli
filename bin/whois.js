@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+var async = require('async')
+var MikroNode = require('mikronode')
+
 if (!module.parent) {
   var args = require('../lib/config')()
   var render = require('../lib/render')(args)
@@ -20,10 +23,7 @@ if (!module.parent) {
     process.exit()
   }
 
-  var async = require('async')
-  var MikroNode = require('mikronode')
-
-  execute()
+  execute(args, render)
 
   var timeout = setTimeout(() => {
     print(new Error('Timeout!'))
@@ -34,11 +34,11 @@ else {
   module.exports = {execute, print}
 }
 
-function execute () {
+function execute (args, render) {
   var connection = MikroNode.getConnection(
     args.config.host, args.config.user, args.config.pass)
 
-  var chan
+  var chan = null
   var router = {
     ondata: (done) => (router.done = done)
   }
