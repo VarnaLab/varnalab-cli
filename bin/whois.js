@@ -19,6 +19,7 @@ if (!module.parent) {
     console.log(render(['Flag', 'Description'], [
       {'--help': 'Help message about `varnalab-whois`'},
       {'--config [file]': 'Specify config file - Required'},
+      {'--env [staging|production]': 'Environment - defaults to `development`'},
       {'--output [json|slack|clean]': 'JSON / Slack attachment output / ' +
         'Clean output without UTF8 tables'},
       {'--timeout 5000': 'Timeout in milliseconds - defaults to 5000'}
