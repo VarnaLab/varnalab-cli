@@ -1,13 +1,12 @@
 {
   extends: 'standard',
 
-  // Mocha
-  globals: {
-    describe: true,
-    before: true,
-    it: true,
-    after: true
+  env: {
+    mocha: true,
+    node: true
   },
+
+  plugins: [],
 
   // Almost Standard
   rules: {
