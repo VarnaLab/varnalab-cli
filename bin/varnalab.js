@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 
-var args = require('../lib/config')()
+var argv = require('minimist')(process.argv.slice(2))
+
+try {
+  var args = require('../lib/config')(argv)
+}
+catch (err) {
+  console.error(err)
+  process.exit()
+}
 var render = require('../lib/render')(args)
 
 var fs = require('fs')

@@ -40,8 +40,8 @@
   ],
   "scripts": {
     "test": "npm run lint && npm run test-ci",
-    "test-ci": "mocha test/bin/ && mocha test/lib/",
-    "test-cov": "npm run test-ci && istanbul report",
+    "test-ci": "mocha test/bin/ test/lib/",
+    "test-cov": "istanbul cover _mocha test/bin/ test/lib/",
     "lint": "eslint **/*.js && echo Lint Passed"
   },
   "engines": {

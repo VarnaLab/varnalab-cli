@@ -1,10 +1,18 @@
 #!/usr/bin/env node
 
+var argv = require('minimist')(process.argv.slice(2))
+
 var async = require('async')
 var MikroNode = require('mikronode')
 
 if (!module.parent) {
-  var args = require('../lib/config')()
+  try {
+    var args = require('../lib/config')(argv)
+  }
+  catch (err) {
+    console.error(err)
+    process.exit()
+  }
   var render = require('../lib/render')(args)
 
   if (args.help) {
