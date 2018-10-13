@@ -2,121 +2,59 @@
 
 var argv = require('minimist')(process.argv.slice(2))
 
-var async = require('async')
-var MikroNode = require('mikronode')
+if (argv.help) {
+  console.log(`
+    --config    /path/to/config.json
+    --env       environment
+    --output    [json|table|clean] - defaults to table, clean = no UTF8 table
+    --timeout   timeout in milliseconds - defaults to 5000
+  `)
+  process.exit()
+}
 
-if (!module.parent) {
+if (!argv.config) {
+  console.error('Specify --config /path/to/config.json')
+  process.exit()
+}
+
+var api = require('../whois/api')
+var table = require('../whois/table')
+
+var print = ({active, error, output}) => {
+  var timestamp = Math.floor(Date.now() / 1000)
+
+  if (active) {
+    return output === 'json'
+      ? JSON.stringify({timestamp, active})
+      : table.render({
+          head: ['mac', 'ip', 'host'],
+          rows: active.map((lease) => [lease.mac, lease.ip, lease.host]),
+          output
+        })
+  }
+  else if (error) {
+    return output === 'json'
+      ? JSON.stringify({timestamp, error: error.message || error})
+      : error
+  }
+}
+
+;(async () => {
+
   try {
-    var args = require('../lib/config')(argv)
+    var active = await api.whois(require(argv.config)[argv.env])
+    console.log(print({active, output: argv.output}))
   }
-  catch (err) {
-    console.error(err)
+  catch (error) {
+    console.error(print({error, output: argv.output}))
+  }
+  finally {
     process.exit()
   }
-  var render = require('../lib/render')(args)
-
-  if (args.help) {
-    console.log(render(['Flag', 'Description'], [
-      {'--help': 'Help message about `varnalab-whois`'},
-      {'--config [file]': 'Specify config file - Required'},
-      {'--env [staging|production]': 'Environment - defaults to `development`'},
-      {'--output [json|slack|clean]': 'JSON / Slack attachment output / ' +
-        'Clean output without UTF8 tables'},
-      {'--timeout 5000': 'Timeout in milliseconds - defaults to 5000'}
-    ]))
-    process.exit()
-  }
-
-  if (!args.config) {
-    console.error('Error: Specify --config [file]')
-    process.exit()
-  }
-
-  execute(args, render)
 
   var timeout = setTimeout(() => {
-    print(new Error('Timeout!'))
+    print({error: new Error('Timeout!'), output: argv.output})
     process.exit()
-  }, args.timeout || 5000)
-}
-else {
-  module.exports = {execute, print}
-}
+  }, argv.timeout || 5000)
 
-function execute (args, render) {
-  var connection = MikroNode.getConnection(
-    args.config.host, args.config.user, args.config.pass)
-
-  var chan = null
-  var router = {
-    ondata: (done) => (router.done = done)
-  }
-
-  async.series({
-    connection: (done) => {
-      connection.connect((conn) => {
-        chan = conn.openChannel()
-        chan.on('done', (body) => router.done(null, MikroNode.parseItems(body)))
-        chan.once('trap', (trap, chan) => router.done(trap))
-        chan.once('error', (err, chan) => router.done(err))
-        done(null, conn)
-      })
-    },
-    leases: (done) => {
-      chan.write('/ip/dhcp-server/lease/getall')
-      router.ondata(done)
-    },
-    active: (done) => {
-      chan.write('/ip/arp/getall')
-      router.ondata(done)
-    }
-  }, (err, result) => {
-    clearTimeout(timeout)
-    var output = print(err, result, args.output, render)
-    console[output instanceof Error ? 'error' : 'log'](output)
-    process.exit()
-  })
-}
-
-function print (err, result, output, render) {
-  var timestamp = Math.floor(Date.now() / 1000)
-  var error, active
-
-  if (err) {
-    error = err.message
-  }
-  else {
-    var mac = result.active.map((lease) => lease['mac-address'])
-
-    active = result.leases
-      .filter((lease) => mac.indexOf(lease['mac-address']) !== -1)
-      .map((lease) => ({
-        mac: lease['mac-address'],
-        ip: lease.address,
-        host: lease['host-name']
-      }))
-  }
-
-  if (output === 'json') {
-    return JSON.stringify({timestamp, error, active})
-  }
-  else if (output === 'slack') {
-    return JSON.stringify({
-      attachments: [{
-        fallback: 'Whois in VarnaLab',
-        text: '💻 *`' + active.length + '`*\n' +
-          active.map((active) =>
-            '_' + active.ip + '_ / *' + active.host + '*'
-          ).join('\n'),
-        ts: timestamp,
-        mrkdwn_in: ['text']
-      }]
-    })
-  }
-  else {
-    return error
-      ? new Error('Error: ' + error)
-      : render(['mac', 'ip', 'host'],
-          active.map((lease) => ([lease.mac, lease.ip, lease.host])))
-  }
-}
+})()

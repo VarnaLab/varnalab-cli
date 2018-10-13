@@ -1,8 +1,0 @@
-{
-  "staging": {
-    "host": "s1", "user": "s2", "pass": "s3", "port": 2
-  },
-  "production": {
-    "host": "p1", "user": "p2", "pass": "p3", "port": 3
-  }
-}
