@@ -18,7 +18,7 @@ var whois = async (options) => {
   var mac = active.map((lease) => lease['mac-address'])
 
   return leases
-    .filter((lease) => mac.indexOf(lease['mac-address']) !== -1)
+    .filter((lease) => mac.includes(lease['mac-address']))
     .map((lease) => ({
       mac: lease['mac-address'],
       ip: lease.address,

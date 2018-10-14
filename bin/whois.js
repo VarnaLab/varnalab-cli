@@ -18,43 +18,24 @@ if (!argv.config) {
 }
 
 var api = require('../whois/api')
-var table = require('../whois/table')
-
-var print = ({active, error, output}) => {
-  var timestamp = Math.floor(Date.now() / 1000)
-
-  if (active) {
-    return output === 'json'
-      ? JSON.stringify({timestamp, active})
-      : table.render({
-          head: ['mac', 'ip', 'host'],
-          rows: active.map((lease) => [lease.mac, lease.ip, lease.host]),
-          output
-        })
-  }
-  else if (error) {
-    return output === 'json'
-      ? JSON.stringify({timestamp, error: error.message || error})
-      : error
-  }
-}
+var output = require('../whois/output')
 
 ;(async () => {
 
+  var timeout = setTimeout(() => {
+    console.error(output({error: new Error('Timeout!'), output: argv.output}))
+    process.exit()
+  }, argv.timeout || 5000)
+
   try {
     var active = await api.whois(require(argv.config)[argv.env])
-    console.log(print({active, output: argv.output}))
+    console.log(output({active, output: argv.output}))
   }
   catch (error) {
-    console.error(print({error, output: argv.output}))
+    console.error(output({error, output: argv.output}))
   }
   finally {
     process.exit()
   }
-
-  var timeout = setTimeout(() => {
-    print({error: new Error('Timeout!'), output: argv.output})
-    process.exit()
-  }, argv.timeout || 5000)
 
 })()
