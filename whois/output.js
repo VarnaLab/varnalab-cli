@@ -8,7 +8,7 @@ module.exports = ({active, error, output='table'}) =>
     active
     ? table.render({
         head: ['mac', 'ip', 'host'],
-        rows: active.map((lease) => [lease.mac, lease.ip, lease.host]),
+        rows: active.map(({mac, ip, host}) => [mac, ip, host]),
         output
       })
     : error
